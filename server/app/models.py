@@ -41,6 +41,10 @@ class Holding(db.Model):
     fund = db.relationship('Fund', backref=db.backref('holdings', lazy=True))
     stock = db.relationship('Stock', backref=db.backref('holdings', lazy=True))
 
+    @property
+    def total_value(self):
+        return self.quantity * self.stock.price
+
 class Fund(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
@@ -58,6 +62,10 @@ class Fund(db.Model):
     return_rate_1y = db.Column(db.Float)
     return_rate_3y = db.Column(db.Float)
     return_rate_5y = db.Column(db.Float)
+
+    @property
+    def total_holdings_value(self):
+        return sum(holding.total_value for holding in self.holdings)
 
 class Stock(db.Model):
     id = db.Column(db.Integer, primary_key=True)

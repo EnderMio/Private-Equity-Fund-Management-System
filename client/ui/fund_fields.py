@@ -6,6 +6,7 @@ fields = {
     "基金金额": "amount",
     "基金经理": "manager",
     "基金类型": "type",
+    "持仓金额": "total_holdings_value",
     "市盈率": "pe_ratio",
     "市净率": "pb_ratio",
     "总市值": "total_market_value",

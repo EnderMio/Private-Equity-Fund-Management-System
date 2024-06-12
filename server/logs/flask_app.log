@@ -42,3 +42,17 @@ Traceback (most recent call last):
   File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
     raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
 TypeError: Object of type User is not JSON serializable
+2024-06-12 18:40:24,067 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 19:07:58,377 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 19:10:17,334 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 19:56:00,132 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 20:18:57,270 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 20:19:05,253 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 20:38:15,890 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 20:39:11,900 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 20:44:23,435 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 20:53:47,534 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 21:05:20,369 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 21:10:41,459 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 21:11:23,331 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 21:23:41,011 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]

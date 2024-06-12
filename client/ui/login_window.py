@@ -50,9 +50,14 @@ class LoginWindow(QWidget):
             response.raise_for_status()  # Raise an exception for HTTP errors
 
             if response.status_code == 200:
-                QMessageBox.information(self, "成功", "登录成功！")
-                self.parent.session = self.session  # 保存会话对象到父组件
-                self.parent.switch_to_dashboard(username)
+                user_data = response.json()
+                user_role = user_data.get('role')
+                if user_role:
+                    QMessageBox.information(self, "成功", "登录成功！")
+                    self.parent.session = self.session  # 保存会话对象到父组件
+                    self.parent.switch_to_dashboard(username, user_role)
+                else:
+                    QMessageBox.critical(self, "错误", "获取用户信息失败")
             else:
                 QMessageBox.critical(self, "错误", f"登录失败: {response.json().get('message', '未知错误')}")
         except requests.exceptions.HTTPError as http_err:

@@ -5,11 +5,12 @@ from .stock_management import StockManagement
 from .user_management import UserManagement
 
 class Dashboard(QWidget):
-    def __init__(self, parent, username):
+    def __init__(self, parent, username, role):
         super().__init__(parent)
         self.parent = parent
         self.username = username
         self.session = parent.session
+        self.user_role = role
         self.initUI()
         self.load_styles()
 
@@ -67,26 +68,18 @@ class Dashboard(QWidget):
 
         # 添加内容页面
         self.fund_management = FundManagement(self)
-        print("添加基金管理到QStackedWidget...")  # 调试信息
         self.content_area.addWidget(self.fund_management)
-        print("基金管理已添加到QStackedWidget。")  # 调试信息
 
         self.stock_management = StockManagement(self)
-        print("添加股票管理到QStackedWidget...")  # 调试信息
         self.content_area.addWidget(self.stock_management)
-        print("股票管理已添加到QStackedWidget。")  # 调试信息
 
         self.user_management = UserManagement(self)
-        print("添加用户管理到QStackedWidget...")  # 调试信息
         self.content_area.addWidget(self.user_management)
-        print("用户管理已添加到QStackedWidget。")  # 调试信息
 
         print("仪表板 UI 初始化成功。")  # 调试信息
 
     def display_page(self, page, title):
-        print(f"尝试显示页面: {page}")  # 调试信息
         index = self.content_area.indexOf(page)
-        print(f"QStackedWidget中的页面索引: {index}")
         if index != -1:
             self.content_area.setCurrentIndex(index)
             self.module_label.setText(title)  # 更新模块标题

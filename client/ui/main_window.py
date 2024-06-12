@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QSpacerItem, QSizePolicy
 from PyQt5.QtCore import Qt
 import requests
-from .login_window import LoginWindow  # 假设此处有一个登录窗口
-from .register_window import RegisterWindow  # 假设此处有一个注册窗口
-from .dashboard import Dashboard  # 假设此处有一个仪表板窗口
+from .login_window import LoginWindow
+from .register_window import RegisterWindow
+from .dashboard import Dashboard
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -15,6 +15,7 @@ class MainWindow(QWidget):
 
         # 创建 session 对象
         self.session = requests.Session()
+        self.user_role = None  # 添加用户身份属性
 
         self.initUI()
 
@@ -59,9 +60,10 @@ class MainWindow(QWidget):
         self.register_window = RegisterWindow(self)  # 传递 session 对象
         self.layout.addWidget(self.register_window)
 
-    def switch_to_dashboard(self, username):  # 确认此方法存在
-        print(f"切换到用户的仪表板: {username}")  # 调试信息
+    def switch_to_dashboard(self, username, role):  # 添加 role 参数
+        print(f"切换到用户的仪表板: {username}, 角色: {role}")  # 调试信息
+        self.user_role = role  # 保存用户身份信息
         self.clear_layout()
-        self.dashboard = Dashboard(self, username)  # 传递 session 对象和用户名
+        self.dashboard = Dashboard(self, username, role)  # 传递 session 对象、用户名和身份角色
         self.layout.addWidget(self.dashboard)
         print("仪表板已添加到布局。")  # 调试信息

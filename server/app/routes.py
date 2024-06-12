@@ -31,7 +31,7 @@ def login():
         login_user(user)
         session['user_id'] = user.id  # 设置会话信息
         print(f"用户 {user.username} 登录成功，会话ID: {session['user_id']}")  # 调试信息
-        return jsonify({'message': 'Logged in successfully'}), 200
+        return jsonify({'message': 'Logged in successfully', 'role': user.role}), 200  # 返回用户身份信息
     return jsonify({'message': 'Invalid credentials'}), 401
 
 @bp.route('/logout', methods=['POST'])
@@ -114,9 +114,6 @@ def delete_fund(fund_id):
 @bp.route('/funds', methods=['GET'])
 @login_required
 def get_all_funds():
-    if current_user.role != 'admin':
-        return jsonify({'message': 'Unauthorized'}), 403
-
     funds = Fund.query.all()
     funds_list = [
         {
@@ -124,8 +121,13 @@ def get_all_funds():
             'name': fund.name,
             'description': fund.description,
             'amount': fund.amount,
-            'manager': fund.manager,
+            'manager': {
+                'id': fund.manager.id,
+                'username': fund.manager.username,
+                'role': fund.manager.role
+            },
             'type': fund.type,
+            'total_holdings_value': fund.total_holdings_value,
             'pe_ratio': fund.pe_ratio,
             'pb_ratio': fund.pb_ratio,
             'total_market_value': fund.total_market_value,
@@ -148,17 +150,21 @@ def get_fund_details(fund_id):
     fund = db.session.get(Fund, fund_id)
     if not fund:
         return jsonify({'message': 'Fund not found'}), 404
+
+    manager = User.query.get(fund.manager_id)
+
     return jsonify({
         'id': fund.id,
         'name': fund.name,
         'description': fund.description,
         'amount': fund.amount,
         'manager': {
-            'id': fund.manager.id,
-            'username': fund.manager.username,
-            'role': fund.manager.role
+            'id': manager.id,
+            'username': manager.username,
+            'role': manager.role
         },
         'type': fund.type,
+        'total_holdings_value': fund.total_holdings_value,
         'pe_ratio': fund.pe_ratio,
         'pb_ratio': fund.pb_ratio,
         'total_market_value': fund.total_market_value,
@@ -178,6 +184,46 @@ def get_fund_details(fund_id):
             for holding in fund.holdings
         ]
     }), 200
+    
+@bp.route('/funds/manager/<string:username>', methods=['GET'])
+@login_required
+def get_funds_by_manager(username):
+    if current_user.role != 'admin' and current_user.role != 'manager':
+        return jsonify({'message': 'Unauthorized'}), 403
+
+    manager = User.query.filter_by(username=username, role='manager').first()
+    if not manager:
+        return jsonify({'message': 'Manager not found'}), 404
+
+    funds = Fund.query.filter_by(manager_id=manager.id).all()
+    funds_list = [
+        {
+            'id': fund.id,
+            'name': fund.name,
+            'description': fund.description,
+            'amount': fund.amount,
+            'manager': {
+                'id': manager.id,
+                'username': manager.username,
+                'role': manager.role
+            },
+            'type': fund.type,
+            'total_holdings_value': fund.total_holdings_value,
+            'pe_ratio': fund.pe_ratio,
+            'pb_ratio': fund.pb_ratio,
+            'total_market_value': fund.total_market_value,
+            'inception_date': fund.inception_date.isoformat() if fund.inception_date else None,
+            'expense_ratio': fund.expense_ratio,
+            'nav': fund.nav,
+            'risk_level': fund.risk_level,
+            'return_rate_1y': fund.return_rate_1y,
+            'return_rate_3y': fund.return_rate_3y,
+            'return_rate_5y': fund.return_rate_5y,
+        }
+        for fund in funds
+    ]
+
+    return jsonify(funds_list), 200
 
 @bp.route('/stocks', methods=['POST'])
 @login_required
@@ -312,10 +358,21 @@ def get_holdings(fund_id):
 @bp.route('/users', methods=['GET'])
 @login_required
 def get_users():
-    if g.user.role != 'admin':
-        return jsonify({'message': 'Unauthorized'}), 403
+    role = request.args.get('role')
     
-    users = User.query.all()
+    # 检查角色参数是否有效
+    if role not in ['admin', 'manager', 'user']:
+        return jsonify({'message': 'Invalid role'}), 400
+
+    # 权限控制逻辑
+    if current_user.role != 'admin':
+        if role == 'admin' or role == 'user':
+            return jsonify({'message': 'Unauthorized'}), 403
+        elif role == 'manager':
+            users = User.query.filter_by(role='manager').all()
+    else:
+        users = User.query.filter_by(role=role).all()
+    
     users_list = [{'id': user.id, 'username': user.username, 'role': user.role} for user in users]
     
     return jsonify(users_list), 200
@@ -323,18 +380,21 @@ def get_users():
 @bp.route('/users/<int:user_id>', methods=['PUT'])
 @login_required
 def update_user(user_id):
-    if g.user.role != 'admin':
-        return jsonify({'message': 'Unauthorized'}), 403
-    
     user = User.query.get(user_id)
     if not user:
         return jsonify({'message': 'User not found'}), 404
     
+    # 检查是否是管理员或用户本人
+    if g.user.role != 'admin' and g.user.id != user_id:
+        return jsonify({'message': 'Unauthorized'}), 403
+
     data = request.get_json()
-    user.username = data.get('username', user.username)
+    if 'username' in data:
+        user.username = data['username']
     if 'password' in data:
         user.set_password(data['password'])
-    user.role = data.get('role', user.role)
+    if 'role' in data and g.user.role == 'admin':  # 只有管理员可以更改角色
+        user.role = data['role']
     
     db.session.commit()
     
@@ -354,3 +414,35 @@ def delete_user(user_id):
     db.session.commit()
     
     return jsonify({'message': 'User deleted successfully'}), 200
+
+@bp.route('/user/<username>/funds', methods=['GET'])
+@login_required
+def get_user_funds(username):
+    user = User.query.filter_by(username=username, role='user').first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    funds = user.funds
+    funds_list = [
+        {
+            'id': fund.id,
+            'name': fund.name,
+            'description': fund.description,
+            'amount': fund.amount,
+            'manager': fund.manager.username,
+            'type': fund.type,
+            'pe_ratio': fund.pe_ratio,
+            'pb_ratio': fund.pb_ratio,
+            'total_market_value': fund.total_market_value,
+            'inception_date': fund.inception_date.isoformat() if fund.inception_date else None,
+            'expense_ratio': fund.expense_ratio,
+            'nav': fund.nav,
+            'risk_level': fund.risk_level,
+            'return_rate_1y': fund.return_rate_1y,
+            'return_rate_3y': fund.return_rate_3y,
+            'return_rate_5y': fund.return_rate_5y,
+            'total_holdings_value': fund.total_holdings_value
+        }
+        for fund in funds
+    ]
+    return jsonify(funds_list), 200

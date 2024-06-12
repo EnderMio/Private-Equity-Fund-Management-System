@@ -70,7 +70,9 @@ def add_sample_data():
         manager1.set_password('password1')
         manager2 = User(username='manager2', role='manager')
         manager2.set_password('password2')
-        db.session.add_all([manager1, manager2])
+        ender_mio = User(username='EnderMio', role='manager')
+        ender_mio.set_password('123456')
+        db.session.add_all([manager1, manager2, ender_mio])
         db.session.commit()
 
     if not User.query.filter_by(role='user').first():
@@ -86,6 +88,8 @@ def add_sample_data():
         # 添加样例基金数据
         manager1 = User.query.filter_by(username='manager1').first()
         manager2 = User.query.filter_by(username='manager2').first()
+        ender_mio = User.query.filter_by(username='EnderMio').first()
+
         fund1 = Fund(
             name='样例基金1',
             description='这是一个测试用的样例基金',
@@ -120,7 +124,24 @@ def add_sample_data():
             return_rate_3y=0.15,
             return_rate_5y=0.25
         )
-        db.session.add_all([fund1, fund2])
+        ender_fund = Fund(
+            name='EnderMio基金',
+            description='由EnderMio管理的测试基金',
+            amount=3000000.0,
+            manager=ender_mio,
+            type='混合型',
+            pe_ratio=18.0,
+            pb_ratio=1.8,
+            total_market_value=3000000.0,
+            inception_date=datetime.strptime('2020-01-01', '%Y-%m-%d').date(),
+            expense_ratio=0.02,
+            nav=15.0,
+            risk_level='中高',
+            return_rate_1y=0.12,
+            return_rate_3y=0.25,
+            return_rate_5y=0.35
+        )
+        db.session.add_all([fund1, fund2, ender_fund])
         db.session.commit()
 
     if not Stock.query.first():
@@ -151,22 +172,89 @@ def add_sample_data():
             shares_outstanding=750000000,
             market_type='NASDAQ'
         )
-        db.session.add_all([stock1, stock2])
+        stock3 = Stock(
+            symbol='GOOGL',
+            name='谷歌公司',
+            price=2700.0,
+            pe_ratio=25.0,
+            pb_ratio=5.0,
+            total_market_value=1800000000000.0,
+            sector='科技',
+            ipo_date='2004-08-19',
+            dividend_yield=0.0,
+            shares_outstanding=300000000,
+            market_type='NASDAQ'
+        )
+        stock4 = Stock(
+            symbol='AMZN',
+            name='亚马逊公司',
+            price=3300.0,
+            pe_ratio=60.0,
+            pb_ratio=20.0,
+            total_market_value=1600000000000.0,
+            sector='科技',
+            ipo_date='1997-05-15',
+            dividend_yield=0.0,
+            shares_outstanding=500000000,
+            market_type='NASDAQ'
+        )
+        stock5 = Stock(
+            symbol='TSLA',
+            name='特斯拉公司',
+            price=700.0,
+            pe_ratio=300.0,
+            pb_ratio=30.0,
+            total_market_value=700000000000.0,
+            sector='汽车',
+            ipo_date='2010-06-29',
+            dividend_yield=0.0,
+            shares_outstanding=1000000000,
+            market_type='NASDAQ'
+        )
+        db.session.add_all([stock1, stock2, stock3, stock4, stock5])
         db.session.commit()
 
     if not Holding.query.first():
         # 添加样例持仓数据
+        fund1 = Fund.query.filter_by(name='样例基金1').first()
+        fund2 = Fund.query.filter_by(name='样例基金2').first()
+        ender_fund = Fund.query.filter_by(name='EnderMio基金').first()
+        stock1 = Stock.query.filter_by(symbol='AAPL').first()
+        stock2 = Stock.query.filter_by(symbol='MSFT').first()
+        stock3 = Stock.query.filter_by(symbol='GOOGL').first()
+        stock4 = Stock.query.filter_by(symbol='AMZN').first()
+        stock5 = Stock.query.filter_by(symbol='TSLA').first()
         holding1 = Holding(
-            fund_id=1,
-            stock_id=1,
+            fund_id=fund1.id,
+            stock_id=stock1.id,
             quantity=1000
         )
         holding2 = Holding(
-            fund_id=2,
-            stock_id=2,
+            fund_id=fund2.id,
+            stock_id=stock2.id,
             quantity=2000
         )
-        db.session.add_all([holding1, holding2])
+        holding3 = Holding(
+            fund_id=ender_fund.id,
+            stock_id=stock1.id,
+            quantity=1500
+        )
+        holding4 = Holding(
+            fund_id=ender_fund.id,
+            stock_id=stock3.id,
+            quantity=500
+        )
+        holding5 = Holding(
+            fund_id=ender_fund.id,
+            stock_id=stock4.id,
+            quantity=300
+        )
+        holding6 = Holding(
+            fund_id=ender_fund.id,
+            stock_id=stock5.id,
+            quantity=700
+        )
+        db.session.add_all([holding1, holding2, holding3, holding4, holding5, holding6])
         db.session.commit()
 
     # 添加用户持有基金数据
