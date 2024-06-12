@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, g, session
 from flask_login import login_user, logout_user, current_user, login_required
 from .models import User, Fund, Stock, Holding
 from . import db
+from datetime import datetime
 
 bp = Blueprint('main', __name__)
 
@@ -39,8 +40,6 @@ def logout():
     logout_user()
     session.pop('user_id', None)  # 移除会话信息
     return jsonify({'message': 'Logged out successfully'}), 200
-
-from datetime import datetime
 
 @bp.route('/funds', methods=['POST'])
 @login_required
@@ -154,12 +153,16 @@ def get_fund_details(fund_id):
         'name': fund.name,
         'description': fund.description,
         'amount': fund.amount,
-        'manager': fund.manager,
+        'manager': {
+            'id': fund.manager.id,
+            'username': fund.manager.username,
+            'role': fund.manager.role
+        },
         'type': fund.type,
         'pe_ratio': fund.pe_ratio,
         'pb_ratio': fund.pb_ratio,
         'total_market_value': fund.total_market_value,
-        'inception_date': fund.inception_date,
+        'inception_date': fund.inception_date.isoformat() if fund.inception_date else None,
         'expense_ratio': fund.expense_ratio,
         'nav': fund.nav,
         'risk_level': fund.risk_level,
@@ -182,7 +185,19 @@ def add_stock():
     if g.user.role != 'admin':
         return jsonify({'message': 'Unauthorized'}), 403
     data = request.get_json()
-    new_stock = Stock(symbol=data['symbol'], name=data['name'])
+    new_stock = Stock(
+        symbol=data['symbol'],
+        name=data['name'],
+        price=data['price'],
+        pe_ratio=data.get('pe_ratio'),
+        pb_ratio=data.get('pb_ratio'),
+        total_market_value=data.get('total_market_value'),
+        sector=data.get('sector'),
+        ipo_date=data.get('ipo_date'),  # 使用字符串类型
+        dividend_yield=data.get('dividend_yield'),
+        shares_outstanding=data.get('shares_outstanding'),
+        market_type=data.get('market_type')
+    )
     db.session.add(new_stock)
     db.session.commit()
     return jsonify({'message': 'Stock added successfully'}), 201
@@ -198,8 +213,34 @@ def update_stock(stock_id):
     data = request.get_json()
     stock.symbol = data.get('symbol', stock.symbol)
     stock.name = data.get('name', stock.name)
+    stock.price = data.get('price', stock.price)
+    stock.pe_ratio = data.get('pe_ratio', stock.pe_ratio)
+    stock.pb_ratio = data.get('pb_ratio', stock.pb_ratio)
+    stock.total_market_value = data.get('total_market_value', stock.total_market_value)
+    stock.sector = data.get('sector', stock.sector)
+    stock.dividend_yield = data.get('dividend_yield', stock.dividend_yield)
+    stock.shares_outstanding = data.get('shares_outstanding', stock.shares_outstanding)
+    stock.market_type = data.get('market_type', stock.market_type)
+    stock.ipo_date = data.get('ipo_date', stock.ipo_date)  # 使用字符串类型
+
     db.session.commit()
-    return jsonify({'message': 'Stock updated successfully'}), 200
+    return jsonify({
+        'message': 'Stock updated successfully',
+        'stock': {
+            'id': stock.id,
+            'symbol': stock.symbol,
+            'name': stock.name,
+            'price': stock.price,
+            'pe_ratio': stock.pe_ratio,
+            'pb_ratio': stock.pb_ratio,
+            'total_market_value': stock.total_market_value,
+            'sector': stock.sector,
+            'ipo_date': stock.ipo_date,  # 使用字符串类型
+            'dividend_yield': stock.dividend_yield,
+            'shares_outstanding': stock.shares_outstanding,
+            'market_type': stock.market_type
+        }
+    }), 200
 
 @bp.route('/stocks/<int:stock_id>', methods=['DELETE'])
 @login_required
@@ -217,13 +258,29 @@ def delete_stock(stock_id):
 @login_required
 def get_stocks():
     stocks = Stock.query.all()
-    stocks_list = [{'id': stock.id, 'symbol': stock.symbol, 'name': stock.name} for stock in stocks]
+    stocks_list = [
+        {
+            'id': stock.id,
+            'symbol': stock.symbol,
+            'name': stock.name,
+            'price': stock.price,
+            'pe_ratio': stock.pe_ratio,
+            'pb_ratio': stock.pb_ratio,
+            'total_market_value': stock.total_market_value,
+            'sector': stock.sector,
+            'ipo_date': stock.ipo_date,  # 使用字符串类型
+            'dividend_yield': stock.dividend_yield,
+            'shares_outstanding': stock.shares_outstanding,
+            'market_type': stock.market_type
+        }
+        for stock in stocks
+    ]
     return jsonify(stocks_list), 200
 
 @bp.route('/funds/<int:fund_id>/holdings', methods=['POST'])
 @login_required
 def add_holding(fund_id):
-    if g.user.role != 'admin':
+    if g.user.role != 'manager':
         return jsonify({'message': 'Unauthorized'}), 403
     data = request.get_json()
     new_holding = Holding(fund_id=fund_id, stock_id=data['stock_id'], quantity=data['quantity'])
@@ -231,9 +288,69 @@ def add_holding(fund_id):
     db.session.commit()
     return jsonify({'message': 'Holding added successfully'}), 201
 
+@bp.route('/funds/<int:fund_id>/holdings/<int:holding_id>', methods=['PUT'])
+@login_required
+def update_holding(fund_id, holding_id):
+    if g.user.role != 'manager':
+        return jsonify({'message': 'Unauthorized'}), 403
+    data = request.get_json()
+    holding = Holding.query.get_or_404(holding_id)
+    if holding.fund_id != fund_id:
+        return jsonify({'message': 'Invalid fund ID'}), 400
+    holding.stock_id = data.get('stock_id', holding.stock_id)
+    holding.quantity = data.get('quantity', holding.quantity)
+    db.session.commit()
+    return jsonify({'message': 'Holding updated successfully'}), 200
+
 @bp.route('/funds/<int:fund_id>/holdings', methods=['GET'])
 @login_required
 def get_holdings(fund_id):
     holdings = Holding.query.filter_by(fund_id=fund_id).all()
     holdings_list = [{'stock_id': holding.stock_id, 'stock_name': holding.stock.name, 'quantity': holding.quantity} for holding in holdings]
     return jsonify(holdings_list), 200
+
+@bp.route('/users', methods=['GET'])
+@login_required
+def get_users():
+    if g.user.role != 'admin':
+        return jsonify({'message': 'Unauthorized'}), 403
+    
+    users = User.query.all()
+    users_list = [{'id': user.id, 'username': user.username, 'role': user.role} for user in users]
+    
+    return jsonify(users_list), 200
+
+@bp.route('/users/<int:user_id>', methods=['PUT'])
+@login_required
+def update_user(user_id):
+    if g.user.role != 'admin':
+        return jsonify({'message': 'Unauthorized'}), 403
+    
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    
+    data = request.get_json()
+    user.username = data.get('username', user.username)
+    if 'password' in data:
+        user.set_password(data['password'])
+    user.role = data.get('role', user.role)
+    
+    db.session.commit()
+    
+    return jsonify({'message': 'User updated successfully'}), 200
+
+@bp.route('/users/<int:user_id>', methods=['DELETE'])
+@login_required
+def delete_user(user_id):
+    if g.user.role != 'admin':
+        return jsonify({'message': 'Unauthorized'}), 403
+    
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    
+    db.session.delete(user)
+    db.session.commit()
+    
+    return jsonify({'message': 'User deleted successfully'}), 200

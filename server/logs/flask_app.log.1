@@ -1,23 +1,6 @@
-2024-06-07 12:22:10,547 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/app/__init__.py:41]
-2024-06-07 14:07:35,108 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 17:47:40,799 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 17:55:38,363 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 17:59:06,794 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 18:13:49,051 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 18:18:24,229 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 18:27:07,885 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 19:42:14,158 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 19:50:12,059 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 19:50:29,782 ERROR: Exception on /funds [GET] [in /Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/app.py:838]
-Traceback (most recent call last):
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
-    self.dialect.do_execute(
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 924, in do_execute
-    cursor.execute(statement, parameters)
-sqlite3.OperationalError: no such column: fund.amount
-
-The above exception was the direct cause of the following exception:
-
+2024-06-12 16:57:28,622 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 18:28:15,870 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-12 18:28:42,300 ERROR: Exception on /funds [GET] [in /Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/app.py:838]
 Traceback (most recent call last):
   File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
     response = self.full_dispatch_request()
@@ -37,53 +20,31 @@ Traceback (most recent call last):
   File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
     return current_app.ensure_sync(func)(*args, **kwargs)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/ender/Workspace/PythonExperiment/server/app/routes.py", line 100, in get_all_funds
-    funds = Fund.query.all()
-            ^^^^^^^^^^^^^^^^
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2673, in all
-    return self._iter().all()  # type: ignore
-           ^^^^^^^^^^^^
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2827, in _iter
-    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
-                                                  ^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2351, in execute
-    return self._execute_internal(
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2236, in _execute_internal
-    result: Result[Any] = compile_state_cls.orm_execute_statement(
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/orm/context.py", line 293, in orm_execute_statement
-    result = conn.execute(
-             ^^^^^^^^^^^^^
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
-    return meth(
-           ^^^^^
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
-    return connection._execute_clauseelement(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
-    ret = self._execute_context(
-          ^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
-    return self._exec_single_context(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
-    self._handle_dbapi_exception(
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2353, in _handle_dbapi_exception
-    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
-    self.dialect.do_execute(
-  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 924, in do_execute
-    cursor.execute(statement, parameters)
-sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: fund.amount
-[SQL: SELECT fund.id AS fund_id, fund.name AS fund_name, fund.description AS fund_description, fund.amount AS fund_amount, fund.manager AS fund_manager, fund.type AS fund_type 
-FROM fund]
-(Background on this error at: https://sqlalche.me/e/20/e3q8)
-2024-06-08 19:51:58,405 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 19:57:19,361 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 20:39:13,100 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 20:55:20,894 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:42]
-2024-06-08 21:05:41,471 ERROR: Exception on /funds [POST] [in /Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/app.py:838]
+  File "/Users/ender/Workspace/PythonExperiment/server/app/routes.py", line 143, in get_all_funds
+    return jsonify(funds_list), 200
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/json/__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/json/provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type User is not JSON serializable
+2024-06-12 18:29:12,018 ERROR: Exception on /funds [GET] [in /Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/app.py:838]
 Traceback (most recent call last):
   File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
     response = self.full_dispatch_request()
@@ -103,7 +64,28 @@ Traceback (most recent call last):
   File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
     return current_app.ensure_sync(func)(*args, **kwargs)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/ender/Workspace/PythonExperiment/server/app/routes.py", line 53, in create_fund
-    name=data['name'],
-         ~~~~^^^^^^^^
-KeyError: 'name'
+  File "/Users/ender/Workspace/PythonExperiment/server/app/routes.py", line 143, in get_all_funds
+    return jsonify(funds_list), 200
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/json/__init__.py", line 170, in jsonify
+    return current_app.json.response(*args, **kwargs)  # type: ignore[return-value]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/json/provider.py", line 214, in response
+    f"{self.dumps(obj, **dump_args)}\n", mimetype=self.mimetype
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/json/provider.py", line 179, in dumps
+    return json.dumps(obj, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/json/provider.py", line 121, in _default
+    raise TypeError(f"Object of type {type(o).__name__} is not JSON serializable")
+TypeError: Object of type User is not JSON serializable
+2024-06-12 18:33:15,319 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]

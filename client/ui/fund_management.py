@@ -203,8 +203,7 @@ class FundManagement(QWidget):
                 self.fund_table.setColumnCount(len(fields) + 1)  # 加上 ID 列
 
                 # 设置表头标签
-                header_labels = ["ID"] + list(fields.values())
-                print(f"表头标签: {header_labels}")  # 调试信息
+                header_labels = ["ID"] + list(fields.keys())
                 self.fund_table.setHorizontalHeaderLabels(header_labels)
 
                 headers = ['id'] + list(fields.values())
@@ -215,27 +214,19 @@ class FundManagement(QWidget):
                         if header == 'fund_inception_date' and value:
                             value = value[:10]  # 只取日期部分
                         self.fund_table.setItem(i, j, QTableWidgetItem(str(value)))
-
-                # 设置表头可见
-                self.fund_table.horizontalHeader().setVisible(True)
-                self.fund_table.verticalHeader().setVisible(True)
-
+                
                 # 设置表格内容不可编辑
                 self.fund_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+                
+                self.fund_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+                self.fund_table.horizontalHeader().setStretchLastSection(True)
+                self.fund_table.horizontalHeader().setFixedHeight(50)
 
                 # 启用水平和垂直滚动
                 self.fund_table.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
                 self.fund_table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 
                 self.view_fund_layout.addWidget(self.fund_table)
-
-                # 调试信息，检查设置的表头
-                for i in range(self.fund_table.columnCount()):
-                    header_item = self.fund_table.horizontalHeaderItem(i)
-                    if header_item:
-                        print(f"表头第 {i} 列: {header_item.text()}")
-                    else:
-                        print(f"表头第 {i} 列: 无")
 
             else:
                 QMessageBox.critical(self, "错误", f"获取基金列表失败: {response.json().get('message', '未知错误')}")
