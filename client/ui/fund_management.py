@@ -390,7 +390,8 @@ class FundManagement(QWidget):
             response = self.session.get(f"{BASE_URL}/user/{self.parent.username}/funds")
             response.raise_for_status()
             funds = response.json()
-            self.display_funds(funds)
+            print(funds)
+            self.display_funds(funds, isUser=True)
         except requests.exceptions.RequestException as e:
             QMessageBox.critical(self, "错误", f"获取基金列表失败: {e}")
             
@@ -404,7 +405,7 @@ class FundManagement(QWidget):
             self.display_funds(funds)
         except requests.exceptions.RequestException as e:
             QMessageBox.critical(self, "错误", f"获取基金列表失败: {e}")
-    def display_funds(self, funds):
+    def display_funds(self, funds, isUser=False):
         self.view_fund_layout = QVBoxLayout()
         self.layout.addLayout(self.view_fund_layout)
 
@@ -421,7 +422,12 @@ class FundManagement(QWidget):
         self.fund_table.setColumnCount(len(fields) + 1)  # 加上持仓金额列
 
         # 设置表头标签
-        header_labels = ["ID"] + list(fields.keys()) + ["持仓金额"]
+        if isUser:
+            header_labels = ["ID"] + list(fields.keys()) + ["持有份额"]
+            headers = ['id'] + list(fields.values()) + ['quantity']
+        else:
+            header_labels = ["ID"] + list(fields.keys())
+            headers = ['id'] + list(fields.values())
         self.fund_table.setHorizontalHeaderLabels(header_labels)
 
         headers = ['id'] + list(fields.values())
@@ -454,7 +460,7 @@ class FundManagement(QWidget):
         # 添加统计信息显示区域
         self.stats_label = QLabel(self)
         self.view_fund_layout.addWidget(self.stats_label)
-        self.update_stats(funds)
+        self.update_stats(funds, isUser=isUser)
 
         self.back_button = QPushButton("返回基金管理", self)
         self.back_button.clicked.connect(self.initUI)
@@ -469,9 +475,12 @@ class FundManagement(QWidget):
             else:
                 self.fund_table.setRowHidden(row, True)
 
-    def update_stats(self, funds):
+    def update_stats(self, funds, isUser=False):
         total_funds = len(funds)
-        total_value = sum(fund.get('total_holdings_value', 0.0) for fund in funds)
+        if isUser == False:
+            total_value = sum(fund.get('total_holdings_value', 0.0) for fund in funds)
+        else:
+            total_value = sum(fund.get('quantity', 0.0) for fund in funds)
         self.stats_label.setText(f"总基金数量: {total_funds}, 总持仓金额: {total_value:.2f}")
     # def display_funds(self, funds):
     #     self.view_fund_layout = QVBoxLayout()

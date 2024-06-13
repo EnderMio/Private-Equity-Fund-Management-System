@@ -248,7 +248,7 @@ class StockManagement(QWidget):
                 stock_data = self.calculate_kdj(stock_data)
 
                 # 绘制交易数据与KDJ图表
-                self.plot_stock_data(stock_data, stock_name)
+                self.plot_stock_data(stock_data, stock_code)
 
                 # 根据J值判断超买超卖并显示仓位管理建议
                 self.display_position_management(stock_data)
@@ -295,13 +295,12 @@ class StockManagement(QWidget):
         df['j'] = 3 * df['k'] - 2 * df['d']
         return df
 
-    def plot_stock_data(self, df, stock_name):
+    def plot_stock_data(self, df, stock_code):
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8))
 
         # 绘制收盘价
         ax1.plot(df['date'], df['close'], label='Close Price')
-        ax1.set_title(f'{stock_name} 收盘价')
-        ax1.set_xlabel('Date')
+        ax1.set_title(f'{stock_code} Close Price - Last Year')
         ax1.set_ylabel('Price')
         ax1.legend()
 
@@ -309,10 +308,10 @@ class StockManagement(QWidget):
         ax2.plot(df['date'], df['k'], label='K')
         ax2.plot(df['date'], df['d'], label='D')
         ax2.plot(df['date'], df['j'], label='J')
-        ax2.set_title('KDJ 指标')
-        ax2.set_xlabel('Date')
         ax2.set_ylabel('Value')
         ax2.legend()
+        
+        fig.subplots_adjust(hspace=0.4)
 
         canvas = FigureCanvas(fig)
         self.view_stock_layout.addWidget(canvas)

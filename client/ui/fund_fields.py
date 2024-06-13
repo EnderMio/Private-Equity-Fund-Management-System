@@ -22,8 +22,18 @@ fields = {
 def create_form_layout(parent):
     grid_layout = QGridLayout()
     entries = {}
+    required_fields = [
+        "基金名称",
+        "基金描述",
+        "基金金额",
+        "基金经理",
+        "基金类型",
+        "费用率",
+        "风险等级",
+    ]
     
-    for i, (label_text, field_name) in enumerate(fields.items()):
+    for i, label_text in enumerate(required_fields):
+        field_name = fields[label_text]
         grid_layout.addWidget(QLabel(label_text, parent), i // 2, (i % 2) * 2)
         entry = QLineEdit(parent)
         grid_layout.addWidget(entry, i // 2, (i % 2) * 2 + 1)

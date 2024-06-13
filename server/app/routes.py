@@ -1,8 +1,9 @@
 from flask import Blueprint, request, jsonify, g, session
 from flask_login import login_user, logout_user, current_user, login_required
-from .models import User, Fund, Stock, Holding
+from .models import User, Fund, Stock, Holding, user_fund_association
 from . import db
 from datetime import datetime
+import re
 
 bp = Blueprint('main', __name__)
 
@@ -17,6 +18,19 @@ def before_request():
 @bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
+    
+    # 定义用户名的正则表达式模式
+    username_pattern = r'^[a-zA-Z][a-zA-Z0-9_]{2,29}$'  # 允许的用户名以字母开头，长度为3到30个字符，只能包含字母、数字和下划线
+
+    # 验证用户名是否符合规范
+    if not re.match(username_pattern, data['username']):
+        return jsonify({'message': 'Invalid username. Username must be 3-30 characters long, start with a letter, and can only contain letters, numbers, and underscores.'}), 400
+
+    # 检查用户名是否已经存在
+    if User.query.filter_by(username=data['username']).first():
+        return jsonify({'message': 'Username already exists.'}), 400
+
+    # 创建新用户
     new_user = User(username=data['username'], role=data.get('role', 'user'))  # 默认角色为 user
     new_user.set_password(data['password'])
     db.session.add(new_user)
@@ -429,7 +443,11 @@ def get_user_funds(username):
             'name': fund.name,
             'description': fund.description,
             'amount': fund.amount,
-            'manager': fund.manager.username,
+            'manager': {
+                'id': fund.manager.id,
+                'username': fund.manager.username,
+                'role': fund.manager.role
+            },
             'type': fund.type,
             'pe_ratio': fund.pe_ratio,
             'pb_ratio': fund.pb_ratio,
@@ -441,7 +459,8 @@ def get_user_funds(username):
             'return_rate_1y': fund.return_rate_1y,
             'return_rate_3y': fund.return_rate_3y,
             'return_rate_5y': fund.return_rate_5y,
-            'total_holdings_value': fund.total_holdings_value
+            'total_holdings_value': fund.total_holdings_value,
+            'quantity': db.session.query(user_fund_association.c.quantity).filter_by(user_id=user.id, fund_id=fund.id).scalar()
         }
         for fund in funds
     ]
