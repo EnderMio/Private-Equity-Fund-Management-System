@@ -24,18 +24,18 @@ def register():
 
     # 验证用户名是否符合规范
     if not re.match(username_pattern, data['username']):
-        return jsonify({'message': 'Invalid username. Username must be 3-30 characters long, start with a letter, and can only contain letters, numbers, and underscores.'}), 400
+        return jsonify({'message': '无效的用户名。用户名必须为3-30个字符长，以字母开头，并且只能包含字母、数字和下划线。'}), 400
 
     # 检查用户名是否已经存在
     if User.query.filter_by(username=data['username']).first():
-        return jsonify({'message': 'Username already exists.'}), 400
+        return jsonify({'message': '用户已然存在'}), 400
 
     # 创建新用户
     new_user = User(username=data['username'], role=data.get('role', 'user'))  # 默认角色为 user
     new_user.set_password(data['password'])
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({'message': 'User registered successfully'}), 201
+    return jsonify({'message': '用户注册成功'}), 201
 
 @bp.route('/login', methods=['POST'])
 def login():
@@ -45,15 +45,15 @@ def login():
         login_user(user)
         session['user_id'] = user.id  # 设置会话信息
         print(f"用户 {user.username} 登录成功，会话ID: {session['user_id']}")  # 调试信息
-        return jsonify({'message': 'Logged in successfully', 'role': user.role}), 200  # 返回用户身份信息
-    return jsonify({'message': 'Invalid credentials'}), 401
+        return jsonify({'message': '登陆成功', 'role': user.role}), 200  # 返回用户身份信息
+    return jsonify({'message': '安全令牌无效'}), 401
 
 @bp.route('/logout', methods=['POST'])
 @login_required
 def logout():
     logout_user()
     session.pop('user_id', None)  # 移除会话信息
-    return jsonify({'message': 'Logged out successfully'}), 200
+    return jsonify({'message': '登出成功'}), 200
 
 @bp.route('/funds', methods=['POST'])
 @login_required
@@ -66,7 +66,7 @@ def create_fund():
     # 查找基金经理
     manager = User.query.filter_by(username=data.get('manager')).first()
     if not manager:
-        return jsonify({'message': 'Manager not found'}), 404
+        return jsonify({'message': '基金经理未找到'}), 404
 
     new_fund = Fund(
         name=data['name'],
@@ -87,7 +87,7 @@ def create_fund():
 
     db.session.add(new_fund)
     db.session.commit()
-    return jsonify({'message': 'Fund created successfully'}), 201
+    return jsonify({'message': '基金创建成功'}), 201
 
 @bp.route('/funds/<int:fund_id>', methods=['PUT'])
 @login_required
