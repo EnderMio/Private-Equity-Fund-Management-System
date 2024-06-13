@@ -28,3 +28,48 @@ NameError: name 'manager' is not defined
 2024-06-13 00:49:00,105 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
 2024-06-13 00:56:59,318 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
 2024-06-13 10:28:25,976 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]
+2024-06-13 10:38:23,348 ERROR: Exception on /funds [POST] [in /Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/app.py:838]
+Traceback (most recent call last):
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask_cors/extension.py", line 178, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/server/app/routes.py", line 65, in create_fund
+    new_fund = Fund(
+               ^^^^^
+  File "<string>", line 4, in __init__
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/orm/state.py", line 564, in _initialize_instance
+    with util.safe_reraise():
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/orm/state.py", line 562, in _initialize_instance
+    manager.original_init(*mixed[1:], **kwargs)
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/orm/decl_base.py", line 2142, in _declarative_constructor
+    setattr(self, k, kwargs[k])
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py", line 537, in __set__
+    self.impl.set(
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py", line 1467, in set
+    value = self.fire_replace_event(state, dict_, value, old, initiator)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py", line 1506, in fire_replace_event
+    value = fn(
+            ^^^
+  File "/Users/ender/Workspace/PythonExperiment/.conda/lib/python3.11/site-packages/sqlalchemy/orm/attributes.py", line 2161, in emit_backref_from_scalar_set_event
+    instance_state(child),
+    ^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute '_sa_instance_state'
+2024-06-13 10:40:07,786 INFO: Flask startup [in /Users/ender/Workspace/PythonExperiment/server/app/__init__.py:44]

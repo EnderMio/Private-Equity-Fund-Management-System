@@ -62,11 +62,17 @@ def create_fund():
         return jsonify({'message': 'Unauthorized'}), 403
 
     data = request.get_json()
+
+    # 查找基金经理
+    manager = User.query.filter_by(username=data.get('manager')).first()
+    if not manager:
+        return jsonify({'message': 'Manager not found'}), 404
+
     new_fund = Fund(
         name=data['name'],
         description=data.get('description'),
         amount=data.get('amount'),
-        manager=data.get('manager'),
+        manager=manager,  # 这里需要传递 User 实例而不是字符串
         type=data.get('type'),
         expense_ratio=data.get('expense_ratio'),
         risk_level=data.get('risk_level'),
@@ -82,7 +88,6 @@ def create_fund():
     db.session.add(new_fund)
     db.session.commit()
     return jsonify({'message': 'Fund created successfully'}), 201
-
 
 @bp.route('/funds/<int:fund_id>', methods=['PUT'])
 @login_required
